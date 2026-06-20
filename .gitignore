@@ -1,0 +1,26 @@
+# Python Bytecode and cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+ipython_log.py
+
+# Local Data / Cache files
+notes_cache.json
+sent_tweets.json
+
+# IDE Settings
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Stay updated with Google Cloud BigQuery release notes and share key updates directly to Twitter with our premium tracking application.">
+    <title>BigQuery Release Notes Tracker & Social Hub</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-logo">
+                <div class="logo-icon">BQ</div>
+                <div class="logo-text">
+                    <h1>BigQuery Release Notes</h1>
+                    <p class="subtitle">Cloud Intelligence & Social Center</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div class="sync-status">
+                    <span class="status-indicator online" id="status-indicator"></span>
+                    <span id="sync-time-text">Syncing...</span>
+                </div>
+                <button id="refresh-btn" class="btn btn-secondary btn-icon" title="Refresh Release Notes">
+                    <svg id="refresh-svg" class="icon-refresh" xmlns="http://www.w3.org/2005/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path><path d="M16 16h5v5"></path></svg>
+                    <span>Refresh Feed</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Stats Bar -->
+        <section class="stats-bar" aria-label="Release Statistics">
+            <div class="stat-card" id="stat-all">
+                <div class="stat-num" id="stat-all-num">--</div>
+                <div class="stat-label">Total Updates</div>
+            </div>
+            <div class="stat-card" id="stat-features">
+                <div class="stat-num" id="stat-features-num">--</div>
+                <div class="stat-label">Features</div>
+            </div>
+            <div class="stat-card" id="stat-announcements">
+                <div class="stat-num" id="stat-announcements-num">--</div>
+                <div class="stat-label">Announcements</div>
+            </div>
+            <div class="stat-card" id="stat-breaking">
+                <div class="stat-num" id="stat-breaking-num">--</div>
+                <div class="stat-label">Breaking / Issues</div>
+            </div>
+        </section>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <!-- Left Side: List of Release Notes -->
+            <section class="feed-section" aria-label="Release Notes List">
+                <div class="filter-panel">
+                    <div class="search-box">
+                        <svg class="search-icon" xmlns="http://www.w3.org/2005/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input type="text" id="search-input" placeholder="Search release notes by keywords..." aria-label="Search release notes">
+                    </div>
+                    
+                    <div class="category-filters" id="category-pills" role="group" aria-label="Filter by type">
+                        <button class="pill active" data-category="all">All</button>
+                        <button class="pill" data-category="Feature">Feature</button>
+                        <button class="pill" data-category="Announcement">Announcement</button>
+                        <button class="pill" data-category="Issue">Issue</button>
+                        <button class="pill" data-category="Breaking">Breaking</button>
+                        <button class="pill" data-category="Change">Change</button>
+                    </div>
+                </div>
+
+                <div class="feed-list-container">
+                    <div id="loading-state" class="loading-state">
+                        <div class="spinner-large"></div>
+                        <p>Fetching the latest release notes from Google Cloud...</p>
+                    </div>
+                    <div id="error-state" class="error-state hidden">
+                        <svg xmlns="http://www.w3.org/2005/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="error-icon"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                        <h3>Failed to load release notes</h3>
+                        <p id="error-message">Unknown error occurred.</p>
+                        <button id="retry-btn" class="btn btn-primary">Retry Now</button>
+                    </div>
+                    <div id="empty-state" class="empty-state hidden">
+                        <p>No release notes found matching your search or filters.</p>
+                    </div>
+                    <div id="notes-list" class="notes-list"></div>
+                </div>
+            </section>
+
+            <!-- Right Side: Tweet Composer and Social Hub -->
+            <section class="social-section" aria-label="Social Sharing Panel">
+                <div class="tabs-header">
+                    <button class="tab-btn active" data-tab="composer-tab" id="tab-composer">Tweet Composer</button>
+                    <button class="tab-btn" data-tab="timeline-tab" id="tab-timeline">Mock Twitter Log (<span id="tweet-count">0</span>)</button>
+                </div>
+
+                <div class="tab-content" id="composer-tab">
+                    <div class="composer-card">
+                        <div class="composer-header">
+                            <div class="user-avatar">BQ</div>
+                            <div class="user-info">
+                                <span class="display-name">BigQuery Broadcaster</span>
+                                <span class="username">@bq_release_hub</span>
+                            </div>
+                            <span class="draft-indicator">Drafting Tweet</span>
+                        </div>
+                        
+                        <div class="composer-body">
+                            <textarea id="tweet-textarea" placeholder="Select a release note card to auto-draft, or start typing here..." maxlength="280" aria-label="Write a Tweet"></textarea>
+                        </div>
+                        
+                        <div class="composer-footer">
+                            <div class="character-counter">
+                                <svg class="progress-ring" width="30" height="30">
+                                    <circle class="progress-ring-bg" stroke="rgba(255,255,255,0.1)" stroke-width="2" fill="transparent" r="12" cx="15" cy="15"/>
+                                    <circle id="progress-ring-indicator" stroke="#4285f4" stroke-width="2.5" fill="transparent" r="12" cx="15" cy="15"/>
+                                </svg>
+                                <span id="char-count">280</span>
+                            </div>
+                            <div class="action-buttons">
+                                <button id="tweet-web-intent-btn" class="btn btn-secondary" disabled>
+                                    <svg xmlns="http://www.w3.org/2005/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                    <span>Real Tweet</span>
+                                </button>
+                                <button id="post-mock-btn" class="btn btn-primary" disabled>
+                                    <svg xmlns="http://www.w3.org/2005/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                                    <span>Post Mock</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="selected-note-preview" id="selected-note-preview">
+                        <div class="preview-empty" id="preview-empty">
+                            <svg xmlns="http://www.w3.org/2005/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="preview-empty-icon"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+                            <p>Select any release note from the list on the left to review its details and prepare a Tweet.</p>
+                        </div>
+                        <div class="preview-content hidden" id="preview-content-box">
+                            <div class="preview-meta">
+                                <span class="preview-category-badge" id="preview-badge">Feature</span>
+                                <span class="preview-date" id="preview-date">June 17, 2026</span>
+                            </div>
+                            <h3 class="preview-title">Source Details</h3>
+                            <div class="preview-desc-body" id="preview-description"></div>
+                            <a href="#" target="_blank" id="preview-link" class="preview-source-link">
+                                View Official Cloud Release Page
+                                <svg xmlns="http://www.w3.org/2005/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content hidden" id="timeline-tab">
+                    <div class="mock-timeline">
+                        <div class="timeline-header">
+                            <h3>Live Broadcasting History</h3>
+                            <p>Local simulation of sent release announcements</p>
+                        </div>
+                        <div id="timeline-list" class="timeline-list">
+                            <div class="timeline-empty" id="timeline-empty">
+                                <p>No tweets sent yet. Compose a tweet and click "Post Mock" to fill this timeline.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="app-footer">
+            <p>BigQuery Release Notes Dashboard &copy; 2026. Built with Python Flask, semantic HTML5, and vanilla styling.</p>
+        </footer>
+    </div>
+
+    <!-- Main JavaScript -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
